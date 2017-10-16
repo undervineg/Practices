@@ -36,6 +36,10 @@ func lengthConverter(inputLength: String) -> String{
     return result
 }
 
-print(lengthConverter(inputLength: "120cm"))
-print(lengthConverter(inputLength: "1.86m"))
-
+// 사용자 입력을 받아 결과 출력
+while(true){
+    print("길이를 단위(cm 또는 m)와 함께 입력해주세요:", terminator: " ")
+    if let inputLine = readLine(){
+        print( lengthConverter(inputLength: inputLine) )
+    }
+}
