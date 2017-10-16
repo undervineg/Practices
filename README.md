@@ -1,4 +1,4 @@
-# undervine's garage
+# undervine's GARAGE
 
 ## contents
 - Swift Basics
