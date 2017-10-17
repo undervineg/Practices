@@ -36,17 +36,18 @@ func convertLength(_ length: String, to unit: String) -> String {
             break   // 'cm'에서 'm'가 인식 되는 등 중복 탐색을 방지하기 위하여 첫 탐색 후 for문 나옴
         }
     }
-    
-    // 숫자부와 단위부로 나누어 Length 타입으로 변환
-    // index(of)로 구한 index는 옵셔널 타입이기 때문에 범위연산자에 넣을 때 언래핑해야 함!
-    if let firstIndexOfcurrUnit = currUnit.first,
-        let currUnitIndexInLength = length.index(of: firstIndexOfcurrUnit), 
-        let currDigitDouble = Double(length[..<currUnitIndexInLength]) {
-        // Length 타입의 convert() 함수를 호출하여 단위 변환
-        return Length(val: currDigitDouble, unit: currUnit).convert(to: unit).toString()
+    // 입력한 단위들이 지원하는 단위인지 확인
+    if lengthUnit.keys.contains(currUnit) && lengthUnit.keys.contains(unit){
+        // 숫자부와 단위부로 나누어 Length 타입으로 변환
+        // index(of)로 구한 index는 옵셔널 타입이기 때문에 범위연산자에 넣을 때 언래핑해야 함!
+        if let firstIndexOfcurrUnit = currUnit.first,
+            let currUnitIndexInLength = length.index(of: firstIndexOfcurrUnit),
+            let currDigitDouble = Double(length[..<currUnitIndexInLength]) {
+            // Length 타입의 convert() 함수를 호출하여 단위 변환
+            return Length(val: currDigitDouble, unit: currUnit).convert(to: unit).toString()
+        }
     }
-    
-    return ""
+    return "지원하지 않는 단위입니다."
 }
 
 
