@@ -281,13 +281,15 @@ func execute(_ inputLine: String){
     }
     // 숫자부와 단위부 색상 나눔.
     let afterConvert: String = "\(ANSICode.text.blue) \(convertResult.0) \(ANSICode.text.redBright)\(convertResult.1)"
-    // 오른쪽 사각형 영역의 맨 위에 결과값 출력.
-    print("\(ANSICode.home)\(ANSICode.cursor.move(row: 2, col: 40))\(afterConvert)")
+    // "변환결과:" 텍스트 우측에 결과값 출력.
+    print("\(ANSICode.home)\(ANSICode.cursor.move(row: 2, col: 40))\(ANSICode.eraseEndLine)\(afterConvert)")
 }
 
 // 사용자 입력 값으로 메인함수 실행. 모든 변환결과 출력.
 func executeAll(_ inputLine: String){
-    let convertResults: [(String, String)] = convertToAllUnit(from: inputLine)      // 단위변환 함수 호출결과 저장.
+    let separatedInput = inputLine.split(separator: " ")
+    let trimmedInput = separatedInput.map({$0.trimmingCharacters(in: .whitespaces)})
+    let convertResults: [(String, String)] = convertToAllUnit(from: trimmedInput[0])      // 단위변환 함수 호출결과 저장.
     var currRow: Int = 4
     var currCol: Int = 30
     let maxRowPerEachCol: Int = 5
@@ -300,8 +302,6 @@ func executeAll(_ inputLine: String){
         }
         // 결과값 출력 위치. 숫자부와 단위부 색상 나눔. 이전출력은 지움.
         print("\(ANSICode.home)\(ANSICode.cursor.move(row: currRow, col: currCol))\(ANSICode.eraseEndLine)\(ANSICode.text.blue) \(result.0) \(ANSICode.text.magenta)\(result.1)")
-        // 이전출력을 지우면서 사각형의 일부가 지워졌으므로 다시 그림.
-        print("\(ANSICode.text.green)\(ANSICode.rect.draw(origin: (28,1), size: (55, 13), isFill: false))")
         currRow += 2        // 두 행(row) 내려감.
     }
 }
@@ -342,8 +342,10 @@ while(true){
     // q 또는 quit 입력 시 루프 종료.
     if inputLine == "q" || inputLine == "quit"{ break }
     // 단위변환 실행.
-    execute(inputLine)
-    executeAll(inputLine)
+    execute(inputLine)      // 목표단위로 변환
+    executeAll(inputLine)   // 모든 단위로 변환
+    // 이전출력을 지우면서 사각형의 일부가 지워졌으므로 다시 그림.
+    print("\(ANSICode.text.green)\(ANSICode.rect.draw(origin: (28,1), size: (55, 13), isFill: false))")
 }
 
 
