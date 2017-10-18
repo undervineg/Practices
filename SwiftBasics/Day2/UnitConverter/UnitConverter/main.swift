@@ -30,7 +30,8 @@ struct Volume: UnitConvertible {
     func convert(to newUnit: String?)->Any{
         guard let selfUnitVal = volumeUnit[self.unit] else{ return Volume(val:0, unit:"") }
         guard let destUnit = newUnit, let destUnitVal = volumeUnit[destUnit] else{
-            return Volume(val: self.val * selfUnitVal / volumeUnit["m"]!, unit: "m")
+            // 목표단위가 없으면 'pt'로 변환
+            return Volume(val: self.val * selfUnitVal / volumeUnit["pt"]!, unit: "pt")
         }
         return Volume(val: self.val * selfUnitVal / destUnitVal, unit: destUnit)
     }
@@ -48,7 +49,8 @@ struct Weight: UnitConvertible {
     func convert(to newUnit: String?)->Any{
         guard let selfUnitVal = weightUnit[self.unit] else{ return Weight(val:0, unit:"") }
         guard let destUnit = newUnit, let destUnitVal = weightUnit[destUnit] else{
-            return Weight(val: self.val * selfUnitVal / weightUnit["m"]!, unit: "m")
+            // 목표단위가 없으면 'kg'으로 변환
+            return Weight(val: self.val * selfUnitVal / weightUnit["kg"]!, unit: "kg")
         }
         return Weight(val: self.val * selfUnitVal / destUnitVal, unit: destUnit)
     }
@@ -67,9 +69,8 @@ struct Length: UnitConvertible{
     func convert(to newUnit: String?)->Any{
         // 현재 단위의 센티미터 기준 값.
         guard let selfUnitVal = lengthUnit[self.unit] else{ return Length(val:0, unit:"") }
-        // 목표단위 nil인 경우.
         guard let destUnit = newUnit, let destUnitVal = lengthUnit[destUnit] else{
-            // 미터로 변환. "m" 해당 값은 항상 있으므로, 강제 추출함.
+            // 목표단위가 없으면 'm'로 변환. "m" 해당 값은 항상 있으므로, 강제 추출함.
             return Length(val: self.val * selfUnitVal / lengthUnit["m"]!, unit: "m")
         }
         // 목표단위 있는 경우. 현재길이를 센티미터로 변환. 목표단위의 센티미터 기준값으로 나누어 변환결과 계산. 새 Length 인스턴스 생성하여 반환.
