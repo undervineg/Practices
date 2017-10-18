@@ -10,7 +10,7 @@ import Foundation
 
 // 지원 단위 및 최소단위(cm,g,L) 기준 변환값.
 // static을 쓸 수 없는 이유는 전역변수이기 때문인가? 추후 따로 다른 파일에 옮겨서 사용.
-let lengthUnit: [String:Double] = ["cm": 1, "m": 100, "inch": 2.54, "yard": 91.44]
+let lengthUnit: [String:Double] = ["cm": 1, "m": 100, "km": 100000, "inch": 2.54, "ft": 30.48, "yard": 91.44, "mile": 160934.4]
 let weightUnit: [String:Double] = ["g": 1, "kg": 1000, "lb": 453.592, "oz": 28.3495]
 let volumeUnit: [String:Double] = ["L": 1, "pt": 0.473176, "qt": 0.946353, "gal": 3.78541]
 
@@ -102,6 +102,7 @@ struct Length: UnitConvertible{
     func convertToAll()->[Any]{
         var resultUnits: [Length] = []
         guard let selfUnitVal = lengthUnit[self.unit] else { return resultUnits }
+        
         // 길이의 모든 단위를 돌면서 Length 구조체 생성.
         for (destUnitKey, destUnitVal) in lengthUnit where destUnitKey != self.unit{
             // 현재단위와 같은 경우 스킵하고 계속 진행. - where 또는 continue 사용 가능.
@@ -252,11 +253,12 @@ func convertToAllUnit(from currValueWithUnit: String)->[(String, String)]{
     // 단위부가 지원되는 값이면
     if isUnitAvailable(currUnit, unitModel){
         // 숫자부 탐색.
-        guard let currDigitValue = searchDigitPart(from: currValueWithUnit, without: currUnit) else {
-            return [("지원되지 않는 단위입니다.","")]
+        if let currDigitValue = searchDigitPart(from: currValueWithUnit, without: currUnit){
+            // 입력값을 변환한 결과값들을 모두 가져옴.(문자열 배열)
+            result = getAllNew(unitType, from: currDigitValue, of: currUnit)
         }
-        // 입력값을 변환한 결과값들을 모두 가져옴.(문자열 배열)
-        result = getAllNew(unitType, from: currDigitValue, of: currUnit)
+    }else{
+        result = [("지원되지 않는 단위입니다.","")]
     }
     return result
 }
@@ -286,12 +288,13 @@ func executeAll(_ inputLine: String){
     let convertResults: [(String, String)] = convertToAllUnit(from: inputLine)      // 단위변환 함수 호출결과 저장.
     var currRow: Int = 4
     var currCol: Int = 30
-    let maxRowPerEachCol: Int = 4
+    let maxRowPerEachCol: Int = 5
     
     for (index, result) in convertResults.enumerated(){                             // 단위 출력순서는 뒤죽박죽임.. 딕셔너리를 썼기 때문.
         // 한 줄(컬럼)당 최대 개수를 넘으면
         if index/maxRowPerEachCol > 0 && index%maxRowPerEachCol == 0{
-            currCol += 6    // 옆 줄로 옮김(col).
+            currCol += 25    // 옆 줄로 옮김(col).
+            currRow = 4
         }
         // 결과값 출력 위치. 숫자부와 단위부 색상 나눔.
         print("\(ANSICode.home)\(ANSICode.cursor.move(row: currRow, col: currCol))\(ANSICode.text.blue) \(result.0) \(ANSICode.text.magenta)\(result.1)")
@@ -301,25 +304,34 @@ func executeAll(_ inputLine: String){
 
 print("\(ANSICode.clear)\(ANSICode.home)")
 // 변환가능한 단위리스트 출력 영역.
-print("\(ANSICode.rect.draw(origin: (1,1), size: (26, 12), isFill: false))")
+print("\(ANSICode.rect.draw(origin: (1,1), size: (26, 13), isFill: false))")
 print("\(ANSICode.cursor.move(row: 2, col: 3))\(ANSICode.text.blackBright)변환가능한 단위리스트")
 print("\(ANSICode.cursor.move(row: 4, col: 4))\(ANSICode.text.cyan)길이단위")
-print("\(ANSICode.cursor.move(row: 5, col: 4))\(ANSICode.text.cyan)cm | m | inch | yard")
-print("\(ANSICode.cursor.move(row: 7, col: 4))\(ANSICode.text.yellow)무게단위")
-print("\(ANSICode.cursor.move(row: 8, col: 4))\(ANSICode.text.yellow)g | kg | lb | oz")
-print("\(ANSICode.cursor.move(row: 10, col: 4))\(ANSICode.text.magenta)부피단위")
-print("\(ANSICode.cursor.move(row: 11, col: 4))\(ANSICode.text.magenta)L | pt | qt | gal")
+print("\(ANSICode.cursor.move(row: 5, col: 4))\(ANSICode.text.cyan)cm | m | km | inch |")
+print("\(ANSICode.cursor.move(row: 6, col: 4))\(ANSICode.text.cyan)pt | yard | mile")
+/* 데이터 키값을 그대로 출력. --> 위치 잡기가 힘듦.
+print("\(ANSICode.cursor.move(row: 4, col: 0))")
+for (index, unit) in lengthUnit.keys.enumerated(){
+    if index%4 == 0 && index/4 > 0{
+        print("")
+    }
+    print("\(ANSICode.text.cyan)\(unit) |", terminator: " ")
+}
+ */
+print("\(ANSICode.cursor.move(row: 8, col: 4))\(ANSICode.text.yellow)무게단위")
+print("\(ANSICode.cursor.move(row: 9, col: 4))\(ANSICode.text.yellow)g | kg | lb | oz")
+print("\(ANSICode.cursor.move(row: 11, col: 4))\(ANSICode.text.magenta)부피단위")
+print("\(ANSICode.cursor.move(row: 12, col: 4))\(ANSICode.text.magenta)L | pt | qt | gal")
 // 변환결과 출력 영역.
-print("\(ANSICode.text.green)\(ANSICode.rect.draw(origin: (28,1), size: (55, 12), isFill: false))")
+print("\(ANSICode.text.green)\(ANSICode.rect.draw(origin: (28,1), size: (55, 13), isFill: false))")
 print("\(ANSICode.cursor.move(row: 2, col: 30))\(ANSICode.text.blackBright)변환결과")
 // 종료 안내문구 위치.
-print("\(ANSICode.cursor.move(row: 14, col: 62))\(ANSICode.text.red)* 종료: quit(or q)")
-// while 문의 시작 위치.
-print("\(ANSICode.cursor.move(row: 15, col: 2))")
+print("\(ANSICode.cursor.move(row: 15, col: 62))\(ANSICode.text.red)* 종료: quit(or q)")
+
 
 // 사용자입력을 받아 결과출력. 종료 전까지 반복.
 while(true){
-    print("\(ANSICode.cursor.move(row: 15, col: 1))\(ANSICode.text.black) > 현재길이와 단위를 목표단위와 함께 입력해주세요:", terminator: " ")
+    print("\(ANSICode.cursor.move(row: 16, col: 1))\(ANSICode.text.black) > 현재길이와 단위를 목표단위와 함께 입력해주세요:", terminator: " ")
     // 입력받은 문자열이 없는 경우 종료.
     guard let inputLine = readLine() else{ break }
     // q 또는 quit 입력 시 루프 종료.
