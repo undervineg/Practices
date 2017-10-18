@@ -47,7 +47,7 @@
 
 - **발견사항**: 길이, 무게, 부피 등 단위 종류가 추가되어 반복적으로 구조체를 만들다보니, 구조체 내부의 변수, 함수가 공통적이라는 사실을 알게 됨. 이에 따라 UnitConvertible 프로토콜을 만들어 각 구조체가 이를 채택하도록 수정함.
 - **문제점**: 길이, 무게, 부피 등 종류가 다른 단위들은 딕셔너리를 따로 만들었기 때문에 사용자가 입력한 단위들이 **길이에 해당하는지, 무게에 해당하는지, 부피에 해당하는지** 등을 애초에 구분해줘야 하는 문제가 생김.
-- **해결방안**: 사용자가 입력한 단위부(**cm, kg, L 등**)를 자른 후, 단위부가 어떤 딕셔너리(**lengthModel, weightModel, volumeModel 등**)에 포함되는지를 모두 검사하여 해당하는 구조체의 Type(**Length, Weight, Volume 등**)을 찾음. 이렇게 찾은 구조체 Type은 몇몇 함수에서 파라미터로 전달받는데, UnitConvertible.Type으로 받아서 switch 문에서 **case is Length** 등으로 매칭시키면 **\"항상 실패한다\(swift cast from \'unitconvertible.type\' to unrelated type \'Length\' always fails\)\"**는 경고가 뜸. 따라서 UnitConvertible.Type으로 오는 타입 자체를 문자열로 받아 switch에서 **문자열로 매칭하여 해결**함. 이를 위해 "String(describing:)"을 사용.
+- **해결방안**: 사용자가 입력한 단위부(**cm, kg, L 등**)를 자른 후, 단위부가 어떤 딕셔너리(**lengthModel, weightModel, volumeModel 등**)에 포함되는지를 모두 검사하여 해당하는 구조체의 Type(**Length, Weight, Volume 등**)을 찾음. 이렇게 찾은 구조체 Type은 몇몇 함수에서 파라미터로 전달받는데, UnitConvertible.Type으로 받아서 switch 문에서 **case is Length** 등으로 매칭시키면 "항상 실패한다(swift cast from 'unitconvertible.type' to unrelated type 'Length' always fails)"는 경고가 뜸. 따라서 UnitConvertible.Type으로 오는 타입 자체를 문자열로 받아 switch에서 **문자열로 매칭하여 해결**함. 이를 위해 **String\(describing:\)**을 사용.
 
 ### 8. 최종 요구사항 1
 >- 프로그램을 시작하면 사용자가 입력해서 변환이 가능한 단위들을 메뉴처럼 표시한다.
