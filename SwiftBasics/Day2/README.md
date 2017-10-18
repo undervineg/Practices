@@ -26,6 +26,7 @@
 
 - **문제점**: 단위가 추가되면서 if문이 많아짐. 입력단위(n)와 목표단위(m) 모두에 대한 경우의 수는 'n x m'으로 증가.
 - **해결방안**: 각각의 변환함수를 만드는 대신, 단위별로 계산에 필요한 값을 미리 배정(딕셔너리). 길이 타입을 정의하는 구조체를 생성하여 내부에 숫자부, 단위부를 나누어 저장하고 목표단위를 파라미터로 받는 단위변환 함수를 구현. 계산 시 딕셔너리 값을 사용함. 이를 통해 현재 단위를 기준으로 목표단위로의 변환이 더 쉬워짐.
+- **wish**: 처음에 딕셔너리 대신 열거형으로 해결해 보려고 했으나, 함수에서 가져다 쓰기가 쉽지 않아 변경함.
 
 ### 5. 야드 길이 변환과 반복 입력
 >- 5단계까지 요구사항을 그대로 유지하면서, 동일하게 야드(yard) 단위도 동작하도록 함수를 구현하고 프로그램을 개선한다.
@@ -45,7 +46,7 @@
 
 - **발견사항**: 길이, 무게, 부피 등 단위 종류가 추가되어 반복적으로 구조체를 만들다보니, 구조체 내부의 변수, 함수가 공통적이라는 사실을 알게 됨. 이에 따라 UnitConvertible 프로토콜을 만들어 각 구조체가 이를 채택하도록 수정함.
 - **문제점**: 길이, 무게, 부피 등 종류가 다른 단위들은 딕셔너리를 따로 만들었기 때문에 사용자가 입력한 단위들이 **길이에 해당하는지, 무게에 해당하는지, 부피에 해당하는지** 등을 애초에 구분해줘야 하는 문제가 생김.
-- **해결방안**: 사용자가 입력한 단위부(**cm, kg, L 등**)를 자른 후, 단위부가 어떤 딕셔너리(**lengthModel, weightModel, volumeModel 등**)에 포함되는지를 모두 검사하여 해당하는 구조체의 Type(**Length, Weight, Volume 등**)을 찾음. 이렇게 찾은 구조체 Type은 몇몇 함수에서 파라미터로 전달받는데, UnitConvertible.Type으로 받아서 switch 문에서 **case is Length** 등으로 매칭시키면 **"항상 실패한다(swift cast from 'unitconvertible.type' to unrelated type 'Length' always fails)"**는 경고가 뜸. 따라서 UnitConvertible.Type으로 오는 타입 자체를 문자열로 받아 switch에서 **문자열로 매칭하여 해결**함. 이를 위해 **String(describing:)**을 사용.
+- **해결방안**: 사용자가 입력한 단위부(**cm, kg, L 등**)를 자른 후, 단위부가 어떤 딕셔너리(**lengthModel, weightModel, volumeModel 등**)에 포함되는지를 모두 검사하여 해당하는 구조체의 Type(**Length, Weight, Volume 등**)을 찾음. 이렇게 찾은 구조체 Type은 몇몇 함수에서 파라미터로 전달받는데, UnitConvertible.Type으로 받아서 switch 문에서 **case is Length** 등으로 매칭시키면 **"항상 실패한다(swift cast from 'unitconvertible.type' to unrelated type 'Length' always fails)"**는 경고가 뜸. 따라서 UnitConvertible.Type으로 오는 타입 자체를 문자열로 받아 switch에서 **문자열로 매칭하여 해결**함. 이를 위해 ***String(describing:)***을 사용.
 
 ### 8. 최종 요구사항 1
 >- 프로그램을 시작하면 사용자가 입력해서 변환이 가능한 단위들을 메뉴처럼 표시한다.
