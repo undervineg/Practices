@@ -13,6 +13,8 @@ import Foundation
 let lengthUnit: [String:Double] = ["cm": 1, "m": 100, "km": 100000, "inch": 2.54, "ft": 30.48, "yard": 91.44, "mile": 160934.4]
 let weightUnit: [String:Double] = ["g": 1, "kg": 1000, "lb": 453.592, "oz": 28.3495]
 let volumeUnit: [String:Double] = ["L": 1, "pt": 0.473176, "qt": 0.946353, "gal": 3.78541]
+// 결과값에서 경고('지원되지 않는 단위입니다.')를 구분하기 위한 문자.
+let warningEscape: String = "!"
 
 // 단위 프로토콜
 protocol UnitConvertible {
@@ -222,7 +224,7 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->(String, 
     if isUnitAvailable(currUnit, unitModel){
         // 파라미터로 받은 문자열에서 숫자부 탐색.
         guard let currDigitValue = searchDigitPart(from: currValueWithUnit, without: currUnit) else {
-            return ("지원되지 않는 단위입니다.", "")
+            return ("지원되지 않는 단위입니다", warningEscape)
         }
         
         // 한 개씩 변환할 때. 목표단위의 유무로 나눔.
@@ -231,6 +233,8 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->(String, 
             if isUnitAvailable(destUnit, unitModel){
                 // 목표단위로 변환한 결과값을 문자열로 받아 저장.
                 result = getNew(unitType, from: currDigitValue, of: currUnit, to: destUnit)
+            }else{
+                result = ("지원되지 않는 단위입니다", warningEscape)
             }
         }else{
             // 목표단위가 없는 경우. 목표단위는 nil이 전달됨.
@@ -239,8 +243,8 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->(String, 
         return result
     }
     
-    // 위에 해당하지 않는 경우, 지원하지 않는 단위로 판단. 경고 메시지 반환.
-    return ("지원되지 않는 단위입니다.", "")
+    // 단위부가 지원되지 않는 경우, 경고 메시지 반환.
+    return ("지원되지 않는 단위입니다", warningEscape)
 }
 
 // [메인2] 사용자 입력값을 숫자부, 단위부로 나누어 모든 단위로 변환. returns 변환결과의 숫자부, 단위부 튜플 배열.
@@ -258,7 +262,7 @@ func convertToAllUnit(from currValueWithUnit: String)->[(String, String)]{
             result = getAllNew(unitType, from: currDigitValue, of: currUnit)
         }
     }else{
-        result = [("지원되지 않는 단위입니다.","")]
+        result = [("지원되지 않는 단위입니다",warningEscape)]
     }
     return result
 }
@@ -280,9 +284,15 @@ func execute(_ inputLine: String){
         convertResult = convertUnit(from: trimmedInput[0], to: trimmedInput[1])
     }
     // 숫자부와 단위부 색상 나눔.
-    let afterConvert: String = "\(ANSICode.text.blue) \(convertResult.0) \(ANSICode.text.redBright)\(convertResult.1)"
+    var afterConvert: String = ""
+    if convertResult.1 == warningEscape{
+        // 지원되지 않는 단위인 경우, 빨간색 표시.
+        afterConvert = "\(ANSICode.text.redBright) ✖︎ \(convertResult.0) ✖︎"
+    }else{
+        afterConvert = "\(ANSICode.text.blue) \(convertResult.0) \(ANSICode.text.magentaBright)\(convertResult.1)"
+    }
     // "변환결과:" 텍스트 우측에 결과값 출력.
-    print("\(ANSICode.home)\(ANSICode.cursor.move(row: 2, col: 40))\(ANSICode.eraseEndLine)\(afterConvert)")
+    print("\(ANSICode.cursor.move(row: 2, col: 40))\(ANSICode.eraseEndLine)\(afterConvert)")
 }
 
 // 사용자 입력 값으로 메인함수 실행. 모든 변환결과 출력.
@@ -301,10 +311,11 @@ func executeAll(_ inputLine: String){
             currRow = 4
         }
         // 결과값 출력 위치. 숫자부와 단위부 색상 나눔. 이전출력은 지움.
-        print("\(ANSICode.home)\(ANSICode.cursor.move(row: currRow, col: currCol))\(ANSICode.eraseEndLine)\(ANSICode.text.blue) \(result.0) \(ANSICode.text.magenta)\(result.1)")
+        print("\(ANSICode.cursor.move(row: currRow, col: currCol))\(ANSICode.eraseEndLine)\(ANSICode.text.blue) \(result.0) \(ANSICode.text.magenta)\(result.1)")
         currRow += 2        // 두 행(row) 내려감.
     }
 }
+
 
 print("\(ANSICode.clear)\(ANSICode.home)")
 // 변환가능한 단위리스트 출력 영역.
