@@ -1,25 +1,89 @@
-# 간접참조
-컴퓨터 공학에서 "간접 참조"는 값 자체보다 컨테이너, 연결, 별명 등을 사용해서 우회해서 참조하도록 하는 방식을 말함
+## 단위변환기 요구사항
+
+### 1. 길이 변환 및 출력
+>- github 저장소를 만들고 새로운 Playground를 생성해서 저장소에 연결한다.
+>- 센티미터(cm) 단위 값을 미터(m) 단위로 변환해 결과 화면에 출력한다.
+>- 미터(m) 단위 값을 센티미터(cm) 단위로 변환해 결과 화면에 출력한다.
 
 
-# 이미 만들어놓은 함수들
-print, zip, swap, stride, readLine, min, max, abs, assert, assertionFailure, debugPrint, dump, fatalError, getVaList, isKnownUniquelyReferenced, numericCast, precondition, preconditionFailure, repeatElement, sequence, stride, transcode, unsafeBitCast, unsafeDowncast, withExtendedLifetime, withUnsafeMutablePointer, withUnsafePointer, withVaList를 자주 씀
+### 2. 길이 단위 변환 및 출력
+>- 길이 단위를 바꿀 때 곱하거나 나누는 값은 바뀌지 않는 값이다. 따라서 상수 값으로 지정해서 프로그램을 구현한다.
+>- 문자열로 값 뒤에 붙어있는 단위에 따라 길이를 변환해서 결과를 출력하는 함수를 만든다.
 
 
-# 데이터 타입
-swift에서는 Int, String, Double, Bool 등의 원시타입이 구조체로 구현되어 있다.
+### 3. 사용자 길이값 입력 및 조건문
+>- 사용자가 길이 값을 입력하고 변수에 저장하도록 한다.
+>- 길이 단위에 따라 센티미터를 미터로 바꾸는 함수와, 미터를 센티미터로 바꾸는 함수로 나눈다.
+>- 사용자가 입력한 문자열에서 값 뒤에 붙어있는 단위에 따라서, 앞서 나눠놓은 길이 변환 함수를 호출하고 결과를 출력한다.
 
 
-# 함수
-선언부와 호출부는 항상 나뉘게 될 것이다.
+### 4. 인치 길이 변환과 예외 처리
+>- 사용자가 길이 값과 단위 외에 "변환할 단위"까지도 입력하도록 확장한다.
+>- 예를 들어 "18cm inch"라고 입력하면 센티미터를 인치로 바꾸는 함수를 호출한다.
+>- 센티미터를 인치로 바꾸는 함수와 인치를 센티미터로 바꾸는 함수를 추가로 구현한다.
+>- 사용자가 입력한 문자열에서 값 뒤에 붙어있는 단위와 그 이후에 변환할 단위를 붙이면 해당하는 변환 함수를 호출해서 변환하도록 구현한다.
+>- 만약 지원하지 않는 길이 단위(feet)가 붙어 있을 경우, "지원하지 않는 단위입니다."를 출력하고 다시 입력받도록 한다.
+
+- **문제점**: 단위가 추가되면서 if문이 많아짐. 입력단위(n)와 목표단위(m) 모두에 대한 경우의 수는 'n x m'으로 증가.
+- **해결방안**: 각각의 변환함수를 만드는 대신, 단위별로 계산에 필요한 값을 미리 배정(딕셔너리). 길이 타입을 정의하는 구조체를 생성하여 내부에 숫자부, 단위부를 나누어 저장하고 목표단위를 파라미터로 받는 단위변환 함수를 구현. 계산 시 딕셔너리 값을 사용함. 이를 통해 현재 단위를 기준으로 목표단위로의 변환이 더 쉬워짐.
+
+### 5. 야드 길이 변환과 반복 입력
+>- 5단계까지 요구사항을 그대로 유지하면서, 동일하게 야드(yard) 단위도 동작하도록 함수를 구현하고 프로그램을 개선한다.
+>- "2.54yard"처럼 숫자 다음에 yard만 붙어있으면 미터 단위 값으로 변환하고 출력한다.
+>- 변환한 값을 출력하고 난 이후에 다시 입력을 반복하도록 개선한다.
+>- 만약 "quit" 혹은 "q" 라고 입력하면 프로그램을 종료한다.
 
 
-# 문자열
-## Search Strings (검색)
+### 6. 무게 단위 변환
+>- 6단계까지 요구사항을 그대로 유지하면서, 동일하게 무게 단위도 동작하도록 함수를 구현하고 프로그램을 개선한다.
+>- 그램(g), 킬로그램(kg), 파운즈(lb), 오운스(oz) 중에서 3 가지 이상을 지원하도록 구현한다.
+
+
+### 7. 부피 단위 변환
+>- 7단계까지 요구사항을 그대로 유지하면서, 동일하게 부피 단위도 동작하도록 함수를 구현하고 프로그램을 개선한다.
+>- 리터(L),파인트(pt),쿼터(qt),겔런(gal) 중에서 3 가지 이상을 지원하도록 구현한다.
+
+- **발견사항**: 길이, 무게, 부피 등 단위 종류가 추가되어 반복적으로 구조체를 만들다보니, 구조체 내부의 변수, 함수가 공통적이라는 사실을 알게 됨. 이에 따라 UnitConvertible 프로토콜을 만들어 각 구조체가 이를 채택하도록 수정함.
+- **문제점**: 길이, 무게, 부피 등 종류가 다른 단위들은 딕셔너리를 따로 만들었기 때문에 사용자가 입력한 단위들이 길이에 해당하는지, 무게에 해당하는 지 등을 애초에 구분해줘야 하는 문제가 생김.
+- **해결방안**: 사용자가 입력한 단위부(**cm, kg, L 등**)를 자른 후, 단위부가 어떤 딕셔너리(**lengthModel, weightModel, volumeModel 등**)에 포함되는지를 모두 검사하여 해당하는 구조체의 Type(**Length, Weight, Volume 등**)을 찾음. 이렇게 찾은 구조체 Type은 몇몇 함수에서 파라미터로 전달받는데, UnitConvertible.Type으로 받아서 switch 문에서 **case is Length** 등으로 매칭시키면 ***"항상 실패한다(swift cast from 'unitconvertible.type' to unrelated type 'Length' always fails)"***는 경고가 뜸. 따라서 UnitConvertible.Type으로 오는 타입 자체를 문자열로 받아 switch에서 **문자열로 매칭하여 해결**함. 이를 위해 ***String(describing:)***을 사용.
+
+### 8. 최종 요구사항 1
+>- 프로그램을 시작하면 사용자가 입력해서 변환이 가능한 단위들을 메뉴처럼 표시한다.
+>- 사용자가 입력할 때 실수를 덜하도록 유도하는 방법을 고민해본다.
+>- 단위가 추가될 때마다 개선하기 편한 코드와 메뉴 구성은 어떤 방식인가 고민해본다.
+
+
+### 9. 최종 요구사항 2
+>- 사용자가 입력한 값 하나로 여러 단위로 변환해서 출력한다.
+>- 예를 들어 "1.83m"라고 입력하면 1.83 미터 값을 각각 센티미터, 인치, 야드 단위로 모두 바꿔서 한꺼번에 출력한다.
+>- "1.83m inch,yard"라고 입력하면 1.83 미터 값을 각각 인치, 야드 단위로만 바꿔서 출력한다.
+
+<br/><br/>
+
+## 기타
+
+### 간접참조
+> 컴퓨터 공학에서 "간접 참조"는 값 자체보다 컨테이너, 연결, 별명 등을 사용해서 우회해서 참조하도록 하는 방식을 말함
+
+
+### 이미 만들어놓은 함수들
+> print, zip, swap, stride, readLine, min, max, abs, assert, assertionFailure, debugPrint, dump, fatalError, getVaList, isKnownUniquelyReferenced, numericCast, precondition, preconditionFailure, repeatElement, sequence, stride, transcode, unsafeBitCast, unsafeDowncast, withExtendedLifetime, withUnsafeMutablePointer, withUnsafePointer, withVaList를 자주 씀
+
+
+### 데이터 타입
+> swift에서는 Int, String, Double, Bool 등의 원시타입이 구조체로 구현되어 있다.
+
+
+### 함수
+> 선언부와 호출부는 항상 나뉘게 될 것이다.
+
+
+### 문자열
+#### Search Strings (검색)
 > Range를 자주 씀. 범위연산자.
 
-## A View of String
+#### A View of String
 > String.unicodeScalars
 
-# 옵셔널
+### 옵셔널
 박스로 값을 감싼 형태
