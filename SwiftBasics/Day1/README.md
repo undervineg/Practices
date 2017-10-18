@@ -57,7 +57,7 @@
 * *git reflog*
 > 내가 커밋한 로그를 요약해서 찍어줌
 * *git diff*
-> 로컬의 branch간 비교, 로컬과 리모트의 내용 비교, commit 간 비교, pull request 내용과 비교 등을 할 수 있음
+> 로컬의 branch간 비교, 로컬과 리모트의 내용 비교, commit 간 비교, pull request 내용과 비교 등을 할 수 있음. ex) git diff HEAD : 로컬의 변경사항을 한눈에 볼 수 있음.
 * *git reset <id> —hard*
 > 버전 되돌림. 단, 되돌린 이력을 남기지 않음. 되도록 안 쓰는 게 좋음.
 * *git revert <id>*
