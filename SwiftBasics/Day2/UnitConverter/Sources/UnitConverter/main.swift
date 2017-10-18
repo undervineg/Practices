@@ -11,6 +11,7 @@ import Foundation
 // 지원 단위 및 최소단위(cm,g,L) 기준 변환값.
 // static을 쓸 수 없는 이유는 전역변수이기 때문인가? 추후 따로 다른 파일에 옮겨서 사용.
 <<<<<<< HEAD
+<<<<<<< HEAD
 let lengthUnit: [String:Double] = ["cm": 1, "m": 100, "km": 100000, "inch": 2.54, "ft": 30.48, "yard": 91.44, "mile": 160934.4]
 let weightUnit: [String:Double] = ["g": 1, "kg": 1000, "lb": 453.592, "oz": 28.3495]
 let volumeUnit: [String:Double] = ["L": 1, "pt": 0.473176, "qt": 0.946353, "gal": 3.78541]
@@ -19,6 +20,11 @@ let lengthUnit: [String:Double] = ["cm" : 1, "m" : 100, "inch" : 2.54, "yard" : 
 let weightUnit: [String:Double] = ["g" : 1, "kg" : 1000, "lb" : 453.592, "oz" : 28.3495]
 let volumeUnit: [String:Double] = ["L" : 1, "pt" : 0.473176, "qt" : 0.946353, "gal" : 3.78541]
 >>>>>>> parent of b124179... 출력화면 수정. 변환가능 단위리스트 및 모든 변환결과 출력 추가.
+=======
+let lengthUnit: [String:Double] = ["cm" : 1, "m" : 100, "inch" : 2.54, "yard" : 91.44]
+let weightUnit: [String:Double] = ["g" : 1, "kg" : 1000, "lb" : 453.592, "oz" : 28.3495]
+let volumeUnit: [String:Double] = ["L" : 1, "pt" : 0.473176, "qt" : 0.946353, "gal" : 3.78541]
+>>>>>>> parent of ff64fbd... 출력화면 수정. 변환가능 단위리스트 및 모든 변환결과 출력 추가.
 
 // 단위 프로토콜
 protocol UnitConvertible {
@@ -84,6 +90,7 @@ struct Length: UnitConvertible{
     }
     
 <<<<<<< HEAD
+<<<<<<< HEAD
     // 현재단위를 제외한 모든 단위로 변환. returns 변환 후 새 구조체 인스턴스 배열.
     func convertToAll()->[Any]{
         var resultUnits: [Length] = []
@@ -102,6 +109,8 @@ struct Length: UnitConvertible{
     
 =======
 >>>>>>> parent of b124179... 출력화면 수정. 변환가능 단위리스트 및 모든 변환결과 출력 추가.
+=======
+>>>>>>> parent of ff64fbd... 출력화면 수정. 변환가능 단위리스트 및 모든 변환결과 출력 추가.
     // returns 숫자부와 단위부의 튜플. 화면 표시 시 단위부만 강조해서 사용하기 위함
     func toString()->(String,String){
         return (String(self.val), unit)
@@ -200,6 +209,7 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->(String, 
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // [메인2] 사용자 입력값을 숫자부, 단위부로 나누어 모든 단위로 변환. returns 변환결과의 숫자부, 단위부 튜플 배열.
 func convertToAllUnit(from currValueWithUnit: String)->[(String, String)]{
     var result: [(String, String)] = []
@@ -226,6 +236,10 @@ func execute(_ inputLine: String){
 // 사용자 입력 값을 slice 하여 메인함수 실행. 결과값 출력.
 func execute(inputLine: String){
 >>>>>>> parent of b124179... 출력화면 수정. 변환가능 단위리스트 및 모든 변환결과 출력 추가.
+=======
+// 사용자 입력 값을 slice 하여 메인함수 실행. 결과값 출력.
+func execute(inputLine: String){
+>>>>>>> parent of ff64fbd... 출력화면 수정. 변환가능 단위리스트 및 모든 변환결과 출력 추가.
     // 결과값 저장 튜플. 숫자부, 문자부로 구성.
     var result: (String, String) = ("", "")
     // 공백 기준으로 입력값 자름. 현재 길이,단위와 목표단위로 나뉨.
@@ -240,6 +254,7 @@ func execute(inputLine: String){
         // 입력 값이 2개인 경우, 목표단위까지 모두 전달.
         result = convertUnit(from: trimmedInput[0], to: trimmedInput[1])
     }
+<<<<<<< HEAD
 <<<<<<< HEAD
     // 결과값 출력 위치. 숫자부와 단위부 색상 나눔.
     print("\(ANSICode.home)\(ANSICode.cursor.move(row: 4, col: 28))\(ANSICode.text.blue) \(convertResult.0) \(ANSICode.text.redBright)\(convertResult.1)")
@@ -300,6 +315,13 @@ while(true){
 }
 
 print("\(ANSICode.clear)\(ANSICode.home)")
+=======
+    
+    print("\(ANSICode.home)\(ANSICode.cursor.move(row: 4, col: 28))\(ANSICode.text.blue) \(result.0) \(ANSICode.text.redBright)\(result.1)")
+}
+
+print("\(ANSICode.clear)\(ANSICode.home)")
+>>>>>>> parent of ff64fbd... 출력화면 수정. 변환가능 단위리스트 및 모든 변환결과 출력 추가.
 print("\(ANSICode.rect.draw(origin: (1,1), size: (25, 12), isFill: false))")
 print("\(ANSICode.rect.draw(origin: (27,1), size: (35, 12), isFill: false))")
 print("\(ANSICode.cursor.move(row: 2, col: 3))\(ANSICode.text.blackBright)단위변환기")
@@ -316,7 +338,10 @@ print("\(ANSICode.cursor.move(row: 15, col: 2))")
 // 사용자입력을 받아 결과출력. 종료 전까지 반복.
 while(true){
     print("\(ANSICode.cursor.move(row: 15, col: 2))\(ANSICode.text.black) > 현재길이와 단위를 목표단위와 함께 입력해주세요:", terminator: " ")
+<<<<<<< HEAD
 >>>>>>> parent of b124179... 출력화면 수정. 변환가능 단위리스트 및 모든 변환결과 출력 추가.
+=======
+>>>>>>> parent of ff64fbd... 출력화면 수정. 변환가능 단위리스트 및 모든 변환결과 출력 추가.
     // 입력받은 문자열이 없는 경우 종료.
     guard let inputLine = readLine() else{ break }
     // q 또는 quit 입력 시 루프 종료.
