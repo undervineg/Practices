@@ -10,15 +10,16 @@ import Foundation
 
 // 지원 단위 및 최소단위(cm,g,L) 기준 변환값.
 // static을 쓸 수 없는 이유는 전역변수이기 때문인가? 추후 따로 다른 파일에 옮겨서 사용.
-let lengthUnit: [String:Double] = ["cm" : 1, "m" : 100, "inch" : 2.54, "yard" : 91.44]
-let weightUnit: [String:Double] = ["g" : 1, "kg" : 1000, "lb" : 453.592, "oz" : 28.3495]
-let volumeUnit: [String:Double] = ["L" : 1, "pt" : 0.473176, "qt" : 0.946353, "gal" : 3.78541]
+let lengthUnit: [String:Double] = ["cm": 1, "m": 100, "inch": 2.54, "yard": 91.44]
+let weightUnit: [String:Double] = ["g": 1, "kg": 1000, "lb": 453.592, "oz": 28.3495]
+let volumeUnit: [String:Double] = ["L": 1, "pt": 0.473176, "qt": 0.946353, "gal": 3.78541]
 
 // 단위 프로토콜
 protocol UnitConvertible {
     var val: Double { get set }
     var unit: String { get set }
     func convert(to newUnit: String?)->Any
+    func convertToAll()->[Any]
     func toString()->(String, String)
 }
 
@@ -34,6 +35,16 @@ struct Volume: UnitConvertible {
             return Volume(val: self.val * selfUnitVal / volumeUnit["pt"]!, unit: "pt")
         }
         return Volume(val: self.val * selfUnitVal / destUnitVal, unit: destUnit)
+    }
+    
+    func convertToAll()->[Any]{
+        var resultUnits: [Volume] = []
+        guard let selfUnitVal = volumeUnit[self.unit] else { return resultUnits }
+        for (destUnitKey, destUnitVal) in volumeUnit where destUnitKey != self.unit{
+            let newLength: Volume = Volume(val: self.val * selfUnitVal / destUnitVal, unit: destUnitKey)
+            resultUnits.append(newLength)
+        }
+        return resultUnits
     }
     
     func toString()->(String,String){
@@ -55,6 +66,16 @@ struct Weight: UnitConvertible {
         return Weight(val: self.val * selfUnitVal / destUnitVal, unit: destUnit)
     }
     
+    func convertToAll()->[Any]{
+        var resultUnits: [Weight] = []
+        guard let selfUnitVal = weightUnit[self.unit] else { return resultUnits }
+        for (destUnitKey, destUnitVal) in weightUnit where destUnitKey != self.unit{
+            let newLength: Weight = Weight(val: self.val * selfUnitVal / destUnitVal, unit: destUnitKey)
+            resultUnits.append(newLength)
+        }
+        return resultUnits
+    }
+    
     func toString()->(String,String){
         return (String(self.val), unit)
     }
@@ -65,16 +86,31 @@ struct Length: UnitConvertible{
     var val: Double     // 길이값
     var unit: String    // 단위
     
-    // 목표단위로 변환. returns 변환후 새 구조체 인스턴스.
+    // 목표단위로 변환. returns 변환 후 새 구조체 인스턴스.
     func convert(to newUnit: String?)->Any{
         // 현재 단위의 센티미터 기준 값.
-        guard let selfUnitVal = lengthUnit[self.unit] else{ return Length(val:0, unit:"") }
+        guard let selfUnitVal = lengthUnit[self.unit] else { return Length(val:0, unit:"") }
         guard let destUnit = newUnit, let destUnitVal = lengthUnit[destUnit] else{
             // 목표단위가 없으면 'm'로 변환. "m" 해당 값은 항상 있으므로, 강제 추출함.
             return Length(val: self.val * selfUnitVal / lengthUnit["m"]!, unit: "m")
         }
         // 목표단위 있는 경우. 현재길이를 센티미터로 변환. 목표단위의 센티미터 기준값으로 나누어 변환결과 계산. 새 Length 인스턴스 생성하여 반환.
         return Length(val: self.val * selfUnitVal / destUnitVal, unit: destUnit)
+    }
+    
+    // 현재단위를 제외한 모든 단위로 변환. returns 변환 후 새 구조체 인스턴스 배열.
+    func convertToAll()->[Any]{
+        var resultUnits: [Length] = []
+        guard let selfUnitVal = lengthUnit[self.unit] else { return resultUnits }
+        // 길이의 모든 단위를 돌면서 Length 구조체 생성.
+        for (destUnitKey, destUnitVal) in lengthUnit where destUnitKey != self.unit{
+            // 현재단위와 같은 경우 스킵하고 계속 진행. - where 또는 continue 사용 가능.
+            //if destUnitKey == self.unit{ continue }
+            let newLength: Length = Length(val: self.val * selfUnitVal / destUnitVal, unit: destUnitKey)
+            // 생성한 Length 구조체를 배열에 추가.
+            resultUnits.append(newLength)
+        }
+        return resultUnits
     }
     
     // returns 숫자부와 단위부의 튜플. 화면 표시 시 단위부만 강조해서 사용하기 위함
@@ -132,7 +168,7 @@ func isUnitAvailable(_ currUnit: String, _ unitModel: [String:Double])->Bool{
 
 // returns 입력단위를 목표단위로 변환한 결과값을 숫자부, 단위부로 나누어 문자열 튜플로 반환.
 func getNew(_ unitType: UnitConvertible.Type, from currVal: Double, of currUnit: String, to destUnit: String?)->(String, String){
-    // 타입 이름 자체로 매칭시킴.
+    // 타입이름으로 매칭시킴.
     let typeName: String = String(describing: unitType)
     switch typeName {
     case "Length": return (Length(val: currVal, unit: currUnit).convert(to: destUnit) as! Length).toString()
@@ -142,7 +178,38 @@ func getNew(_ unitType: UnitConvertible.Type, from currVal: Double, of currUnit:
     }
 }
 
-// 단위 변환 메인함수.
+// 모든 단위로 변환한 결과 반환.
+func getAllNew(_ unitType: UnitConvertible.Type, from currVal: Double, of currUnit: String)->[(String, String)]{
+    let typeName: String = String(describing: unitType)
+    var results: [Any] = []
+    var resultStrings: [(String, String)] = []
+    // 타입이름으로 매칭시킴. 배열 받아옴.
+    switch typeName {
+    case "Length":
+        results = Length(val: currVal, unit: currUnit).convertToAll() as! [Length]
+        // 각각의 값을 문자열로 변환하여 다시 배열로 만듦.
+        for result in results{
+            resultStrings.append((result as! Length).toString())
+        }
+    case "Weight":
+        results = Weight(val: currVal, unit: currUnit).convertToAll() as! [Weight]
+        for result in results{
+            resultStrings.append((result as! Weight).toString())
+        }
+    case "Volume":
+        results = Volume(val: currVal, unit: currUnit).convertToAll() as! [Volume]
+        for result in results{
+            resultStrings.append((result as! Volume).toString())
+        }
+    default: return resultStrings
+    }
+    
+    // 결과 문자열 배열 반환.
+    return resultStrings
+}
+
+
+// [메인1] 사용자 입력값을 숫자부, 단위부로 나누어 목표단위로 변환. returns 변환결과의 숫자부, 단위부 튜플.
 func convertUnit(from currValueWithUnit: String, to newUnit: String?)->(String, String){
     var result: (String, String) = ("","")                                          // 결과값의 숫자부, 단위부 저장 튜플.
     
@@ -154,12 +221,12 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->(String, 
     if isUnitAvailable(currUnit, unitModel){
         // 파라미터로 받은 문자열에서 숫자부 탐색.
         guard let currDigitValue = searchDigitPart(from: currValueWithUnit, without: currUnit) else {
-            return ("지원하지 않는 단위입니다.", "")
+            return ("지원되지 않는 단위입니다.", "")
         }
         
-        // 목표단위가 있는 경우.
+        // 한 개씩 변환할 때. 목표단위의 유무로 나눔.
         if let destUnit = newUnit{
-            // 목표단위가 지원되는 값인지 확인.
+            // 목표단위가 있는 경우. 목표단위가 지원되는 값인지 확인.
             if isUnitAvailable(destUnit, unitModel){
                 // 목표단위로 변환한 결과값을 문자열로 받아 저장.
                 result = getNew(unitType, from: currDigitValue, of: currUnit, to: destUnit)
@@ -170,14 +237,34 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->(String, 
         }
         return result
     }
+    
     // 위에 해당하지 않는 경우, 지원하지 않는 단위로 판단. 경고 메시지 반환.
     return ("지원되지 않는 단위입니다.", "")
 }
 
-// 사용자 입력 값을 slice 하여 메인함수 실행. 결과값 출력.
-func execute(inputLine: String){
+// [메인2] 사용자 입력값을 숫자부, 단위부로 나누어 모든 단위로 변환. returns 변환결과의 숫자부, 단위부 튜플 배열.
+func convertToAllUnit(from currValueWithUnit: String)->[(String, String)]{
+    var result: [(String, String)] = []
+    // 파라미터로 받은 문자열에서 단위타입 및 단위부 탐색. 이를 통해 해당되는 단위 데이터 받아옴.
+    let (unitType, currUnit) = searchUnitPart(from: currValueWithUnit)
+    let unitModel: [String:Double] = getUnitModel(of: unitType)
+    
+    // 단위부가 지원되는 값이면
+    if isUnitAvailable(currUnit, unitModel){
+        // 숫자부 탐색.
+        guard let currDigitValue = searchDigitPart(from: currValueWithUnit, without: currUnit) else {
+            return [("지원되지 않는 단위입니다.","")]
+        }
+        // 입력값을 변환한 결과값들을 모두 가져옴.(문자열 배열)
+        result = getAllNew(unitType, from: currDigitValue, of: currUnit)
+    }
+    return result
+}
+
+// 사용자 입력 값을 slice 하여 메인함수 실행. 1개의 변환결과만 출력.
+func execute(_ inputLine: String){
     // 결과값 저장 튜플. 숫자부, 문자부로 구성.
-    var result: (String, String) = ("", "")
+    var convertResult: (String, String) = ("", "")
     // 공백 기준으로 입력값 자름. 현재 길이,단위와 목표단위로 나뉨.
     let separatedInput = inputLine.split(separator: " ")
     // 추가적인 공백 제거.
@@ -185,38 +272,61 @@ func execute(inputLine: String){
     // 입력 값 개수에 따라 함수 파라미터 달라짐.
     if trimmedInput.count < 2{
         // 입력 값이 1개인 경우(예: 123yard), 목표단위는 nil로 전달.
-        result = convertUnit(from: trimmedInput[0], to: nil)
+        convertResult = convertUnit(from: trimmedInput[0], to: nil)
     }else{
         // 입력 값이 2개인 경우, 목표단위까지 모두 전달.
-        result = convertUnit(from: trimmedInput[0], to: trimmedInput[1])
+        convertResult = convertUnit(from: trimmedInput[0], to: trimmedInput[1])
     }
+    // 결과값 출력 위치. 숫자부와 단위부 색상 나눔.
+    print("\(ANSICode.home)\(ANSICode.cursor.move(row: 4, col: 28))\(ANSICode.text.blue) \(convertResult.0) \(ANSICode.text.redBright)\(convertResult.1)")
+}
+
+// 사용자 입력 값으로 메인함수 실행. 모든 변환결과 출력.
+func executeAll(_ inputLine: String){
+    let convertResults: [(String, String)] = convertToAllUnit(from: inputLine)      // 단위변환 함수 호출결과 저장.
+    var currRow: Int = 4
+    var currCol: Int = 30
+    let maxRowPerEachCol: Int = 4
     
-    print("\(ANSICode.home)\(ANSICode.cursor.move(row: 4, col: 28))\(ANSICode.text.blue) \(result.0) \(ANSICode.text.redBright)\(result.1)")
+    for (index, result) in convertResults.enumerated(){                             // 단위 출력순서는 뒤죽박죽임.. 딕셔너리를 썼기 때문.
+        // 한 줄(컬럼)당 최대 개수를 넘으면
+        if index/maxRowPerEachCol > 0 && index%maxRowPerEachCol == 0{
+            currCol += 6    // 옆 줄로 옮김(col).
+        }
+        // 결과값 출력 위치. 숫자부와 단위부 색상 나눔.
+        print("\(ANSICode.home)\(ANSICode.cursor.move(row: currRow, col: currCol))\(ANSICode.text.blue) \(result.0) \(ANSICode.text.magenta)\(result.1)")
+        currRow += 2        // 두 행(row) 내려감.
+    }
 }
 
 print("\(ANSICode.clear)\(ANSICode.home)")
-print("\(ANSICode.rect.draw(origin: (1,1), size: (25, 12), isFill: false))")
-print("\(ANSICode.rect.draw(origin: (27,1), size: (35, 12), isFill: false))")
-print("\(ANSICode.cursor.move(row: 2, col: 3))\(ANSICode.text.blackBright)단위변환기")
-print("\(ANSICode.cursor.move(row: 2, col: 29))\(ANSICode.text.blackBright)변환결과")
-print("\(ANSICode.cursor.move(row: 4, col: 3))\(ANSICode.text.cyan)길이단위")
-print("\(ANSICode.cursor.move(row: 5, col: 3))\(ANSICode.text.cyan)cm | m | inch | yard")
-print("\(ANSICode.cursor.move(row: 7, col: 3))\(ANSICode.text.yellow)무게단위")
-print("\(ANSICode.cursor.move(row: 8, col: 3))\(ANSICode.text.yellow)g | kg | lb | oz")
-print("\(ANSICode.cursor.move(row: 10, col: 3))\(ANSICode.text.magenta)부피단위")
-print("\(ANSICode.cursor.move(row: 11, col: 3))\(ANSICode.text.magenta)L | pt | qt | gal")
-print("\(ANSICode.cursor.move(row: 14, col: 44))\(ANSICode.text.red)* 종료: quit(or q)")
+// 변환가능한 단위리스트 출력 영역.
+print("\(ANSICode.rect.draw(origin: (1,1), size: (26, 12), isFill: false))")
+print("\(ANSICode.cursor.move(row: 2, col: 3))\(ANSICode.text.blackBright)변환가능한 단위리스트")
+print("\(ANSICode.cursor.move(row: 4, col: 4))\(ANSICode.text.cyan)길이단위")
+print("\(ANSICode.cursor.move(row: 5, col: 4))\(ANSICode.text.cyan)cm | m | inch | yard")
+print("\(ANSICode.cursor.move(row: 7, col: 4))\(ANSICode.text.yellow)무게단위")
+print("\(ANSICode.cursor.move(row: 8, col: 4))\(ANSICode.text.yellow)g | kg | lb | oz")
+print("\(ANSICode.cursor.move(row: 10, col: 4))\(ANSICode.text.magenta)부피단위")
+print("\(ANSICode.cursor.move(row: 11, col: 4))\(ANSICode.text.magenta)L | pt | qt | gal")
+// 변환결과 출력 영역.
+print("\(ANSICode.text.green)\(ANSICode.rect.draw(origin: (28,1), size: (55, 12), isFill: false))")
+print("\(ANSICode.cursor.move(row: 2, col: 30))\(ANSICode.text.blackBright)변환결과")
+// 종료 안내문구 위치.
+print("\(ANSICode.cursor.move(row: 14, col: 62))\(ANSICode.text.red)* 종료: quit(or q)")
+// while 문의 시작 위치.
 print("\(ANSICode.cursor.move(row: 15, col: 2))")
 
 // 사용자입력을 받아 결과출력. 종료 전까지 반복.
 while(true){
-    print("\(ANSICode.cursor.move(row: 15, col: 2))\(ANSICode.text.black) > 현재길이와 단위를 목표단위와 함께 입력해주세요:", terminator: " ")
+    print("\(ANSICode.cursor.move(row: 15, col: 1))\(ANSICode.text.black) > 현재길이와 단위를 목표단위와 함께 입력해주세요:", terminator: " ")
     // 입력받은 문자열이 없는 경우 종료.
     guard let inputLine = readLine() else{ break }
     // q 또는 quit 입력 시 루프 종료.
     if inputLine == "q" || inputLine == "quit"{ break }
     // 단위변환 실행.
-    execute(inputLine: inputLine)
+    executeAll(inputLine)
+    //execute(inputLine)
 }
 
 
