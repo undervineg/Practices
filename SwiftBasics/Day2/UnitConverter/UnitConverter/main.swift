@@ -175,8 +175,8 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->String{
     return "지원되지 않는 단위입니다."
 }
 
-// 사용자 입력 값을 slice 하여 단위변환 함수 호출. returns 목표단위값 문자열.
-func execute(inputLine: String)->String{
+// 사용자 입력 값을 slice 하여 메인함수 실행.
+func execute(inputLine: String){
     // 결과값 저장 변수.
     var result: String = ""
     // 공백 기준으로 입력값 자름. 현재 길이,단위와 목표단위로 나뉨.
@@ -191,7 +191,7 @@ func execute(inputLine: String)->String{
         // 입력 값이 2개인 경우, 목표단위까지 모두 전달.
         result = convertUnit(from: trimmedInput[0], to: trimmedInput[1])
     }
-    return result
+    print(result)
 }
 
 // 사용자입력을 받아 결과출력. 종료 전까지 반복.
@@ -202,5 +202,5 @@ while(true){
     // q 또는 quit 입력 시 루프 종료.
     if inputLine == "q" || inputLine == "quit"{ break }
     // 결과 출력.
-    print(execute(inputLine: inputLine))
+    execute(inputLine: inputLine)
 }
