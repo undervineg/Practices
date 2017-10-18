@@ -131,10 +131,10 @@ func isUnitAvailable(_ currUnit: String, _ unitModel: [String:Double])->Bool{
     else { return false }
 }
 
-// returns 입력단위를 목표단위로 변환한 문자열.
+// returns 입력단위를 목표단위로 변환한 결과값을 문자열로 반환.
 func getNew(_ unitType: UnitConvertible.Type, from currVal: Double, of currUnit: String, to destUnit: String?)->String{
+    // 타입 이름 자체로 매칭시킴.
     let typeName: String = String(describing: unitType)
-    // 타입의 문자열 이름으로 매칭.
     switch typeName {
     case "Length": return (Length(val: currVal, unit: currUnit).convert(to: destUnit) as! Length).toString()
     case "Weight": return (Weight(val: currVal, unit: currUnit).convert(to: destUnit) as! Weight).toString()
