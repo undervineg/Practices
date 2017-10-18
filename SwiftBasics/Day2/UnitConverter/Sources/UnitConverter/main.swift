@@ -19,7 +19,7 @@ protocol UnitConvertible {
     var val: Double { get set }
     var unit: String { get set }
     func convert(to newUnit: String?)->Any
-    func toString()->String
+    func toString()->(String, String)
 }
 
 // 부피 구조체
@@ -36,8 +36,8 @@ struct Volume: UnitConvertible {
         return Volume(val: self.val * selfUnitVal / destUnitVal, unit: destUnit)
     }
     
-    func toString()->String{
-        return String(self.val) + unit
+    func toString()->(String,String){
+        return (String(self.val), unit)
     }
 }
 
@@ -55,8 +55,8 @@ struct Weight: UnitConvertible {
         return Weight(val: self.val * selfUnitVal / destUnitVal, unit: destUnit)
     }
     
-    func toString()->String{
-        return String(self.val) + unit
+    func toString()->(String,String){
+        return (String(self.val), unit)
     }
 }
 
@@ -77,9 +77,9 @@ struct Length: UnitConvertible{
         return Length(val: self.val * selfUnitVal / destUnitVal, unit: destUnit)
     }
     
-    // returns 현재 길이값에 단위를 더한 문자열
-    func toString()->String{
-        return String(self.val) + unit
+    // returns 숫자부와 단위부의 튜플. 화면 표시 시 단위부만 강조해서 사용하기 위함
+    func toString()->(String,String){
+        return (String(self.val), unit)
     }
 }
 
@@ -130,21 +130,21 @@ func isUnitAvailable(_ currUnit: String, _ unitModel: [String:Double])->Bool{
     else { return false }
 }
 
-// returns 입력단위를 목표단위로 변환한 결과값을 문자열로 반환.
-func getNew(_ unitType: UnitConvertible.Type, from currVal: Double, of currUnit: String, to destUnit: String?)->String{
+// returns 입력단위를 목표단위로 변환한 결과값을 숫자부, 단위부로 나누어 문자열 튜플로 반환.
+func getNew(_ unitType: UnitConvertible.Type, from currVal: Double, of currUnit: String, to destUnit: String?)->(String, String){
     // 타입 이름 자체로 매칭시킴.
     let typeName: String = String(describing: unitType)
     switch typeName {
     case "Length": return (Length(val: currVal, unit: currUnit).convert(to: destUnit) as! Length).toString()
     case "Weight": return (Weight(val: currVal, unit: currUnit).convert(to: destUnit) as! Weight).toString()
     case "Volume": return (Volume(val: currVal, unit: currUnit).convert(to: destUnit) as! Volume).toString()
-    default: return ""
+    default: return ("","")
     }
 }
 
 // 단위 변환 메인함수.
-func convertUnit(from currValueWithUnit: String, to newUnit: String?)->String{
-    var result: String = ""                                               // 결과값 저장 변수.
+func convertUnit(from currValueWithUnit: String, to newUnit: String?)->(String, String){
+    var result: (String, String) = ("","")                                          // 결과값의 숫자부, 단위부 저장 튜플.
     
     // 파라미터로 받은 문자열에서 단위부 탐색.
     let (unitType, currUnit) = searchUnitPart(from: currValueWithUnit)    // 현재 단위 저장 변수. 단위 타입도 저장(Length,Weight,Volume)
@@ -154,7 +154,7 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->String{
     if isUnitAvailable(currUnit, unitModel){
         // 파라미터로 받은 문자열에서 숫자부 탐색.
         guard let currDigitValue = searchDigitPart(from: currValueWithUnit, without: currUnit) else {
-            return "지원하지 않는 단위입니다."
+            return ("지원하지 않는 단위입니다.", "")
         }
         
         // 목표단위가 있는 경우.
@@ -171,13 +171,13 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->String{
         return result
     }
     // 위에 해당하지 않는 경우, 지원하지 않는 단위로 판단. 경고 메시지 반환.
-    return "지원되지 않는 단위입니다."
+    return ("지원되지 않는 단위입니다.", "")
 }
 
 // 사용자 입력 값을 slice 하여 메인함수 실행. 결과값 출력.
 func execute(inputLine: String){
-    // 결과값 저장 변수.
-    var result: String = ""
+    // 결과값 저장 튜플. 숫자부, 문자부로 구성.
+    var result: (String, String) = ("", "")
     // 공백 기준으로 입력값 자름. 현재 길이,단위와 목표단위로 나뉨.
     let separatedInput = inputLine.split(separator: " ")
     // 추가적인 공백 제거.
@@ -190,12 +190,27 @@ func execute(inputLine: String){
         // 입력 값이 2개인 경우, 목표단위까지 모두 전달.
         result = convertUnit(from: trimmedInput[0], to: trimmedInput[1])
     }
-    print(result)
+    
+    print("\(ANSICode.home)\(ANSICode.cursor.move(row: 4, col: 28))\(ANSICode.text.blue) \(result.0) \(ANSICode.text.redBright)\(result.1)")
 }
+
+print("\(ANSICode.clear)\(ANSICode.home)")
+print("\(ANSICode.rect.draw(origin: (1,1), size: (25, 12), isFill: false))")
+print("\(ANSICode.rect.draw(origin: (27,1), size: (35, 12), isFill: false))")
+print("\(ANSICode.cursor.move(row: 2, col: 3))\(ANSICode.text.blackBright)단위변환기")
+print("\(ANSICode.cursor.move(row: 2, col: 29))\(ANSICode.text.blackBright)변환결과")
+print("\(ANSICode.cursor.move(row: 4, col: 3))\(ANSICode.text.cyan)길이단위")
+print("\(ANSICode.cursor.move(row: 5, col: 3))\(ANSICode.text.cyan)cm | m | inch | yard")
+print("\(ANSICode.cursor.move(row: 7, col: 3))\(ANSICode.text.yellow)무게단위")
+print("\(ANSICode.cursor.move(row: 8, col: 3))\(ANSICode.text.yellow)g | kg | lb | oz")
+print("\(ANSICode.cursor.move(row: 10, col: 3))\(ANSICode.text.magenta)부피단위")
+print("\(ANSICode.cursor.move(row: 11, col: 3))\(ANSICode.text.magenta)L | pt | qt | gal")
+print("\(ANSICode.cursor.move(row: 14, col: 44))\(ANSICode.text.red)* 종료: quit(or q)")
+print("\(ANSICode.cursor.move(row: 15, col: 2))")
 
 // 사용자입력을 받아 결과출력. 종료 전까지 반복.
 while(true){
-    print("길이(단위포함)를 변환할 단위와 함께 입력해주세요:", terminator: " ")
+    print("\(ANSICode.cursor.move(row: 15, col: 2))\(ANSICode.text.black) > 현재길이와 단위를 목표단위와 함께 입력해주세요:", terminator: " ")
     // 입력받은 문자열이 없는 경우 종료.
     guard let inputLine = readLine() else{ break }
     // q 또는 quit 입력 시 루프 종료.
@@ -203,3 +218,5 @@ while(true){
     // 단위변환 실행.
     execute(inputLine: inputLine)
 }
+
+
