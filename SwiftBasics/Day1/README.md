@@ -95,9 +95,9 @@
 * 해결책1 : OSX의 로그인 계정을 분리해서 쓰는 것이 가장 깔끔함
 * 해결책2 : 리모트 저장소 URL에 계정정보를 포함하면 됨
 	* 즉, A프로젝트와 B프로젝트의 리모트 저장소 URL 각각에 해당 계정정보를 바인딩하는 방법
-	* git remote -v_ 를 하면 해당 프로젝트와 연결된 깃헙의 url이 나옴
-	* git remote set-url origin https://undervine@github.com/undervine/iOS5.git_ 을 하면 깃헙 연결 시 계정정보를 바인딩할 수 있음
-	* git remote add origin https://github.com/undervine/iOS5.git_ 를 하면, 현재 프로젝트 폴더(A)에 해당 깃헙(undervine)이 연결됨
+	* _git remote -v_ 를 하면 해당 프로젝트와 연결된 깃헙의 url이 나옴
+	* _git remote set-url origin https://undervine@github.com/undervine/iOS5.git_ 을 하면 깃헙 연결 시 계정정보를 바인딩할 수 있음
+	* _git remote add origin https://github.com/undervine/iOS5.git_ 를 하면, 현재 프로젝트 폴더(A)에 해당 깃헙(undervine)이 연결됨
 
 * 참고 : [터미널에서 git 패스워드 기억하기](https://medium.com/happyprogrammer-in-jeju/mac-os-x-터미널에서-git-패스워드-기억하기-5675d58a60cd)
 
