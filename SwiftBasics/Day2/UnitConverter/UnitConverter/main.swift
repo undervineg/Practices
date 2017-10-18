@@ -148,7 +148,7 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->String{
     var result: String = ""                                               // 결과값 저장 변수.
     
     // 파라미터로 받은 문자열에서 단위부 탐색.
-    let (unitType, currUnit) = searchUnitPart(from: currValueWithUnit)    // 현재 단위 저장 변수.
+    let (unitType, currUnit) = searchUnitPart(from: currValueWithUnit)    // 현재 단위 저장 변수. 단위 타입도 저장(Length,Weight,Volume)
     let unitModel: [String:Double] = getUnitModel(of: unitType)           // 해당되는 단위 모델이 저장될 변수.
 
     // 단위부가 지원되는 값인지 확인.
@@ -158,12 +158,11 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->String{
             return "지원하지 않는 단위입니다."
         }
         
-        // 목표단위가 있는 경우. 바꾸려는 단위가 지원하는 단위인지 확인.
+        // 목표단위가 있는 경우.
         if let destUnit = newUnit{
             // 목표단위가 지원되는 값인지 확인.
             if isUnitAvailable(destUnit, unitModel){
-                // 입력값으로 해당 단위의 구조체를 생성.
-                // convert() 함수를 호출하여 단위 변환 후, toString() 함수로 변환결과값+목표단위를 String으로 리턴.
+                // 목표단위로 변환한 결과값을 문자열로 받아 저장.
                 result = getNew(unitType, from: currDigitValue, of: currUnit, to: destUnit)
             }
         }else{
@@ -172,7 +171,7 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->String{
         }
         return result
     }
-    
+    // 위에 해당하지 않는 경우, 지원하지 않는 단위로 판단. 경고 메시지 반환.
     return "지원되지 않는 단위입니다."
 }
 
