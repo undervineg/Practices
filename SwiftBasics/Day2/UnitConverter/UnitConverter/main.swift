@@ -175,7 +175,7 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->String{
     return "지원되지 않는 단위입니다."
 }
 
-// 사용자 입력 값을 slice 하여 메인함수 실행.
+// 사용자 입력 값을 slice 하여 메인함수 실행. 결과값 출력.
 func execute(inputLine: String){
     // 결과값 저장 변수.
     var result: String = ""
@@ -201,6 +201,6 @@ while(true){
     guard let inputLine = readLine() else{ break }
     // q 또는 quit 입력 시 루프 종료.
     if inputLine == "q" || inputLine == "quit"{ break }
-    // 결과 출력.
+    // 단위변환 실행.
     execute(inputLine: inputLine)
 }
