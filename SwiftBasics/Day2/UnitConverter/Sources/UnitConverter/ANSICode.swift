@@ -10,10 +10,14 @@ import Foundation
 
 //https://en.wikipedia.org/wiki/ANSI_escape_code
 public struct ANSICode {
-    static let escape   = "\u{001B}["
-    static let clear    = "\(escape)2J"
-    static let home     = "\(escape)0;0H"
-    static let none     = "\(escape)0;0m\(escape)1;0m"
+    static let escape           = "\u{001B}["
+    static let clear            = "\(escape)2J"
+    static let eraseEndLine     = "\(escape)K"
+    static let eraseStartLine   = "\(escape)1K"
+    static let eraseDown        = "\(escape)J"
+    static let eraseUp          = "\(escape)1J"
+    static let home             = "\(escape)0;0H"
+    static let none             = "\(escape)0;0m\(escape)1;0m"
     
     struct text {
         static let black   = escape + "0;30m"
