@@ -86,15 +86,13 @@ struct Length: UnitConvertible{
 // 단위부 검색. 단위가 길이인지, 무게인지, 부피인지도 판별.
 func searchUnitPart(from currValue: String)->(UnitConvertible.Type, String){
     for key in lengthUnit.keys{
-        // 'cm'에서 'm'가 인식 되는 등 중복 탐색을 방지하기 위하여 첫 탐색 후 for문 나옴.
+        // 해당되는 단위가 있으면 바로 리턴하여 for문 및 함수 탈출.
         if currValue.hasSuffix(key){ return (Length.self, key) }
     }
     for key in weightUnit.keys{
-        // 'cm'에서 'm'가 인식 되는 등 중복 탐색을 방지하기 위하여 첫 탐색 후 for문 나옴.
         if currValue.hasSuffix(key){ return (Weight.self, key) }
     }
     for key in volumeUnit.keys{
-        // 'cm'에서 'm'가 인식 되는 등 중복 탐색을 방지하기 위하여 첫 탐색 후 for문 나옴.
         if currValue.hasSuffix(key){ return (Volume.self, key) }
     }
     return (Length.self, "cm")
