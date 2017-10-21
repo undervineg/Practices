@@ -323,7 +323,7 @@ print("\(ANSICode.rect.draw(origin: (1,1), size: (26, 13), isFill: false))")
 print("\(ANSICode.cursor.move(row: 2, col: 3))\(ANSICode.text.blackBright)변환가능한 단위리스트")
 print("\(ANSICode.cursor.move(row: 4, col: 4))\(ANSICode.text.cyan)길이단위")
 print("\(ANSICode.cursor.move(row: 5, col: 4))\(ANSICode.text.cyan)cm | m | km | inch |")
-print("\(ANSICode.cursor.move(row: 6, col: 4))\(ANSICode.text.cyan)pt | yard | mile")
+print("\(ANSICode.cursor.move(row: 6, col: 4))\(ANSICode.text.cyan)ft | yard | mile")
 /* 데이터 키값을 그대로 출력. --> 위치 잡기가 힘듦.
  print("\(ANSICode.cursor.move(row: 4, col: 0))")
  for (index, unit) in lengthUnit.keys.enumerated(){
