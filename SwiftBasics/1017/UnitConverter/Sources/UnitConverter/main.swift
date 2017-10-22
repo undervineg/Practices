@@ -122,6 +122,12 @@ struct Length: UnitConvertible{
     }
 }
 
+enum Units{
+    case Length
+    case Weight
+    case Volume
+}
+
 // 단위부 검색. 단위가 길이인지, 무게인지, 부피인지도 판별.
 func searchUnitPart(from currValue: String)->(UnitConvertible.Type, String){
     for key in lengthUnit.keys{
