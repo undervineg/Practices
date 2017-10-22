@@ -13,8 +13,16 @@ import Foundation
 let lengthUnit: [String:Double] = ["cm": 1, "m": 100, "km": 100000, "inch": 2.54, "ft": 30.48, "yard": 91.44, "mile": 160934.4]
 let weightUnit: [String:Double] = ["g": 1, "kg": 1000, "lb": 453.592, "oz": 28.3495]
 let volumeUnit: [String:Double] = ["L": 1, "pt": 0.473176, "qt": 0.946353, "gal": 3.78541]
+
 // 결과값에서 경고('지원되지 않는 단위입니다.')를 구분하기 위한 문자.
 let warningEscape: String = "!"
+
+// 단위부의 타입을 식별하기 위한 열거형.
+enum Units{
+    case Length
+    case Weight
+    case Volume
+}
 
 // 단위 프로토콜
 protocol UnitConvertible {
@@ -24,6 +32,7 @@ protocol UnitConvertible {
     func convertToAll()->[Any]
     func toString()->(String, String)
 }
+
 
 // 부피 구조체
 struct Volume: UnitConvertible {
@@ -54,6 +63,7 @@ struct Volume: UnitConvertible {
     }
 }
 
+
 // 무게 구조체
 struct Weight: UnitConvertible {
     var val: Double
@@ -82,6 +92,7 @@ struct Weight: UnitConvertible {
         return (String(self.val), unit)
     }
 }
+
 
 // 길이 구조체
 struct Length: UnitConvertible{
@@ -122,20 +133,24 @@ struct Length: UnitConvertible{
     }
 }
 
+
 // 단위부 검색. 단위가 길이인지, 무게인지, 부피인지도 판별.
-func searchUnitPart(from currValue: String)->(UnitConvertible.Type, String){
+func searchUnitPart(from currValue: String)->(Units, String){
+    var result: (Units, String) = (Units.Length, "")
+    
     for key in lengthUnit.keys{
         // 해당되는 단위가 있으면 바로 리턴하여 for문 및 함수 탈출.
-        if currValue.hasSuffix(key){ return (Length.self, key) }
+        if currValue.contains(key){ result = (Units.Length, key) }
     }
     for key in weightUnit.keys{
-        if currValue.hasSuffix(key){ return (Weight.self, key) }
+        if currValue.contains(key){ result = (Units.Weight, key) }
     }
     for key in volumeUnit.keys{
-        if currValue.hasSuffix(key){ return (Volume.self, key) }
+        if currValue.contains(key){ result = (Units.Volume, key) }
     }
-    return (Length.self, "cm")
+    return result
 }
+
 
 // 숫자부 검색.
 func searchDigitPart(from currValue: String, without currUnit: String)->Double?{
@@ -147,21 +162,23 @@ func searchDigitPart(from currValue: String, without currUnit: String)->Double?{
     }else{
         return nil
     }
+    
 }
 
+
 // returns 입력단위에 해당하는 데이터모델. 길이 또는 무게 또는 부피 등.
-func getUnitModel(of type: UnitConvertible.Type)->[String:Double]{
+func getUnitModel(of type: Units)->[String:Double]{
     var unitModel: [String:Double] = [:]
-    let typeName: String = String(describing: type)     // 타입 이름을 문자열로 변환.
     
-    switch typeName {
-    case "Length": unitModel = lengthUnit
-    case "Weight": unitModel = weightUnit
-    case "Volume": unitModel = volumeUnit
-    default: break
+    switch type {
+    case .Length: unitModel = lengthUnit
+    case .Weight: unitModel = weightUnit
+    case .Volume: unitModel = volumeUnit
     }
+
     return unitModel
 }
+
 
 // 단위부가 지원되는 값인지 확인하는 함수. returns Bool.
 func isUnitAvailable(_ currUnit: String, _ unitModel: [String:Double])->Bool{
@@ -169,42 +186,39 @@ func isUnitAvailable(_ currUnit: String, _ unitModel: [String:Double])->Bool{
     else { return false }
 }
 
+
 // returns 입력단위를 목표단위로 변환한 결과값을 숫자부, 단위부로 나누어 문자열 튜플로 반환.
-func getNew(_ unitType: UnitConvertible.Type, from currVal: Double, of currUnit: String, to destUnit: String?)->(String, String){
-    // 타입이름으로 매칭시킴.
-    let typeName: String = String(describing: unitType)
-    switch typeName {
-    case "Length": return (Length(val: currVal, unit: currUnit).convert(to: destUnit) as! Length).toString()
-    case "Weight": return (Weight(val: currVal, unit: currUnit).convert(to: destUnit) as! Weight).toString()
-    case "Volume": return (Volume(val: currVal, unit: currUnit).convert(to: destUnit) as! Volume).toString()
-    default: return ("","")
+func getNew(_ unitType: Units, from currVal: Double, of currUnit: String, to destUnit: String?)->(String, String){
+    switch unitType {
+    case .Length: return (Length(val: currVal, unit: currUnit).convert(to: destUnit) as! Length).toString()
+    case .Weight: return (Weight(val: currVal, unit: currUnit).convert(to: destUnit) as! Weight).toString()
+    case .Volume: return (Volume(val: currVal, unit: currUnit).convert(to: destUnit) as! Volume).toString()
     }
 }
 
+
 // 모든 단위로 변환한 결과 반환.
-func getAllNew(_ unitType: UnitConvertible.Type, from currVal: Double, of currUnit: String)->[(String, String)]{
-    let typeName: String = String(describing: unitType)
+func getAllNew(_ unitType: Units, from currVal: Double, of currUnit: String)->[(String, String)]{
     var results: [Any] = []
     var resultStrings: [(String, String)] = []
-    // 타입이름으로 매칭시킴. 배열 받아옴.
-    switch typeName {
-    case "Length":
+    
+    switch unitType {
+    case .Length:
         results = Length(val: currVal, unit: currUnit).convertToAll() as! [Length]
         // 각각의 값을 문자열로 변환하여 다시 배열로 만듦.
         for result in results{
             resultStrings.append((result as! Length).toString())
         }
-    case "Weight":
+    case .Weight:
         results = Weight(val: currVal, unit: currUnit).convertToAll() as! [Weight]
         for result in results{
             resultStrings.append((result as! Weight).toString())
         }
-    case "Volume":
+    case .Volume:
         results = Volume(val: currVal, unit: currUnit).convertToAll() as! [Volume]
         for result in results{
             resultStrings.append((result as! Volume).toString())
         }
-    default: return resultStrings
     }
     
     // 결과 문자열 배열 반환.
@@ -247,6 +261,7 @@ func convertUnit(from currValueWithUnit: String, to newUnit: String?)->(String, 
     return ("지원되지 않는 단위입니다", warningEscape)
 }
 
+
 // [메인2] 사용자 입력값을 숫자부, 단위부로 나누어 모든 단위로 변환. returns 변환결과의 숫자부, 단위부 튜플 배열.
 func convertToAllUnit(from currValueWithUnit: String)->[(String, String)]{
     var result: [(String, String)] = []
@@ -266,6 +281,7 @@ func convertToAllUnit(from currValueWithUnit: String)->[(String, String)]{
     }
     return result
 }
+
 
 // 사용자 입력 값을 slice 하여 메인함수 실행. 1개의 변환결과만 출력.
 func execute(_ inputLine: String){
@@ -294,6 +310,7 @@ func execute(_ inputLine: String){
     // "변환결과:" 텍스트 우측에 결과값 출력.
     print("\(ANSICode.cursor.move(row: 2, col: 40))\(ANSICode.eraseEndLine)\(afterConvert)")
 }
+
 
 // 사용자 입력 값으로 메인함수 실행. 모든 변환결과 출력.
 func executeAll(_ inputLine: String){
