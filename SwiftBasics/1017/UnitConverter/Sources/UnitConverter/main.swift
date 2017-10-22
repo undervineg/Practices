@@ -136,17 +136,19 @@ struct Length: UnitConvertible{
 
 // 단위부 검색. 단위가 길이인지, 무게인지, 부피인지도 판별.
 func searchUnitPart(from currValue: String)->(Units, String){
+    var result: (Units, String) = (Units.Length, "")
+    
     for key in lengthUnit.keys{
         // 해당되는 단위가 있으면 바로 리턴하여 for문 및 함수 탈출.
-        if currValue.hasSuffix(key){ return (Units.Length , key) }
+        if currValue.contains(key){ result = (Units.Length, key) }
     }
     for key in weightUnit.keys{
-        if currValue.hasSuffix(key){ return (Units.Weight , key) }
+        if currValue.contains(key){ result = (Units.Weight, key) }
     }
     for key in volumeUnit.keys{
-        if currValue.hasSuffix(key){ return (Units.Volume , key) }
+        if currValue.contains(key){ result = (Units.Volume, key) }
     }
-    return (Units.Length , "cm")
+    return result
 }
 
 
@@ -160,6 +162,7 @@ func searchDigitPart(from currValue: String, without currUnit: String)->Double?{
     }else{
         return nil
     }
+    
 }
 
 
