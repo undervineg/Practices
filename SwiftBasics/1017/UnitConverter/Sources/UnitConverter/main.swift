@@ -299,12 +299,12 @@ func execute(_ inputLine: String){
 func executeAll(_ inputLine: String){
     let separatedInput = inputLine.split(separator: " ")
     let trimmedInput = separatedInput.map({$0.trimmingCharacters(in: .whitespaces)})
-    let convertResults: [(String, String)] = convertToAllUnit(from: trimmedInput[0])      // 단위변환 함수 호출결과 저장.
+    let convertResults: [(String, String)] = convertToAllUnit(from: trimmedInput[0])    // 단위변환 함수 호출결과 저장.
     var currRow: Int = 4
     var currCol: Int = 30
     let maxRowPerEachCol: Int = 5
     
-    for (index, result) in convertResults.enumerated(){                             // 단위 출력순서는 뒤죽박죽임.. 딕셔너리를 썼기 때문.
+    for (index, result) in convertResults.enumerated(){                                 // 단위 출력순서는 뒤죽박죽임.. 딕셔너리를 썼기 때문.
         // 한 줄(컬럼)당 최대 개수를 넘으면
         if index/maxRowPerEachCol > 0 && index%maxRowPerEachCol == 0{
             currCol += 25    // 옆 줄로 옮김(col).
