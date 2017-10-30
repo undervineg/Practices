@@ -1,7 +1,11 @@
-# Swift Basic
+# Missions, Swift, Algorithm...
 
 ## Contents
 
-**[Day1]** [프로그래밍 시작 + 개발 환경 설정](https://github.com/undervineg/Practices/tree/master/SwiftBasics/1016)
+**[Day0]** [내맘대로 Vending Machine](https://github.com/undervineg/Practices/tree/master/VendingMachine)
 
-**[Day2]** [단위변환기](https://github.com/undervineg/Practices/tree/master/SwiftBasics/1017)
+**[Day1]** [About GitHub](https://github.com/undervineg/Practices/tree/master/GitHub)
+
+**[Day2]** [Mission1: UnitConverter](https://github.com/undervineg/Practices/tree/master/UnitConverter)
+
+**[Day3]** [Introduction of Algorithm](https://github.com/undervineg/Practices/tree/master/Algorithm)
