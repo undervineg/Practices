@@ -23,6 +23,7 @@
 * 브랜치 이름 접두어:  **hotfix-**
 * 핫픽스 브랜치의 수정 사항은 **배포 완료 후 develop 브랜치에 병합.**
 
+<br/>
 
-* [원문](http://nvie.com/posts/a-successful-git-branching-model/)
-* [참고](https://backlog.com/git-tutorial/kr/stepup/stepup1_5.html)
+>- [출처원문](http://nvie.com/posts/a-successful-git-branching-model/)
+>- [참고사이트](https://backlog.com/git-tutorial/kr/stepup/stepup1_5.html)
