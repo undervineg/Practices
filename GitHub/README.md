@@ -6,4 +6,4 @@
 
 - [Git Remote, 협업과정](https://github.com/undervineg/Practices/tree/master/GitHub/Advanced)
 
-- [Git Branch 운용모델]()
+- [Git Branch 운용모델](https://github.com/undervineg/Practices/tree/master/GitHub/BranchingModel)
