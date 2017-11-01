@@ -65,7 +65,16 @@
 		- ![Fetch 동작](fetch.png)
 		- 반면, git pull은 fetch + merge를 한 번에 수행. 
 		- ![Pull 동작](pull.png)
+	- **git rebase 동작방법**
+		- master 브랜치, test 브랜치가 있을 때, 
+			- git checkout test
+			- git rebase master
+		- 를 실행하면, 두 브랜치가 나뉘기 전인 공통 커밋으로 이동하여 그 커밋부터 지금 checkout한 브랜치(test)가 가리키는 커밋까지 diff를 차례로 만들어 임시로 저장해둠.
+		- test 브랜치가 합칠 브랜치인 master 브랜치가 가리키는 커밋을 가리키게 하고, 임시로 저장해둔(diff) 변경사항을 차례대로 적용한다.
 	- **git rebase upstream/[내아이디]** : upstream을 fetch 후 upstream/[내아이디]브랜치는 원격과 동일한 최신 커밋을 가리키고 있지만, 로컬의 [내아이디] 브랜치는 기존 커밋을 가리키고 있음. 로컬의 [내아이디] 브랜치도 최신 커밋을 가리키도록 rebase.
+		- 리베이스할 브랜치는 undervineg, 합칠 브랜치는 upstream/undervineg 브랜치. upstream/undervineg 브랜치는 2번에서 upstream 서버로부터 fetch한 마지막 커밋을 가리키고 있음. rebase 시, 두 브랜치의 차이(diff)를 저장, undervineg 브랜치가 합칠 브랜치인 upstream/undervineg 브랜치가 가리키는 커밋을 가리키게 한 뒤, diff를 차례대로 적용.(fast forward 방식)
+		- 정리하면, 현재 브랜치를 합칠브랜치를 기준으로 정리하는 것.
+		- **이 경우에는 브랜치를 합친다는 의미보다는 undervineg 브랜치 헤더를 가장 최신인 upstream/undervineg로 옮기는 과정이라고 생각하면 됨**
 	- **git push** : code-squad 서버에서 최신 커밋을 받아 업데이트한 로컬 [내아이디]브랜치를 내 서버(origin)로 다시 업로드.
 	
 <br/>
