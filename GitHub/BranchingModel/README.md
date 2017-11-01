@@ -1,5 +1,7 @@
 ##  성공적인 Git Branch 운용모델
 
+![Git Branch 운용모델 도식](branching_model.png)
+
 ### 1. 메인 브랜치(Main branch)
 * **master 브랜치** : **배포가능한 상태만 관리**. 커밋 시 태그 사용하여 배포번호 기록.
 * **develop 브랜치** : 통합 브랜치의 역할. 기본 개발 용도.
