@@ -2,6 +2,10 @@
 
 ## Contents
 
+- [내맘대로 계산기](https://github.com/undervineg/Practices/tree/master/CalculatorMVCTest)
+
+- [내맘대로 FaceIt!](https://github.com/undervineg/Practices/tree/master/FaceItTest)
+
 - [내맘대로 자판기](https://github.com/undervineg/Practices/tree/master/VendingMachine)
 
 - [깃헙으로 하는 협업](https://github.com/undervineg/Practices/tree/master/GitHub)
